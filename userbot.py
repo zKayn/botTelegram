@@ -21,9 +21,9 @@ async def forward_message(event):
             await client.send_file(group_b_id, file=event.photo, caption=event.text or "")
         elif event.text:
             await client.send_message(group_b_id, event.text)
-        print("✅ Tin nhắn đã được chuyển tiếp.")
+        print("✅ Tin nhắn đã được chuyển tiếp.", flush=True)
     except Exception as e:
-        print(f"❌ Lỗi: {e}")
+        print(f"❌ Lỗi: {e}", flush=True)
 
 # --- Chạy Telethon bot ---
 def run_telegram_bot():
@@ -34,9 +34,9 @@ def run_telegram_bot():
 async def start_bot(loop):
     await client.connect()
     if not await client.is_user_authorized():
-        print("❌ Chưa đăng nhập Telegram.")
+        print("❌ Chưa đăng nhập Telegram.", flush=True)
         return
-    print("🤖 Bot Telegram đang chạy...")
+    print("🤖 Bot Telegram đang chạy...", flush=True)
     await client.run_until_disconnected()
 
 # --- Flask giữ cho app luôn 'alive' ---
