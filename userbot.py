@@ -1,17 +1,24 @@
-import asyncio
+from flask import Flask
 from telethon import TelegramClient, events
+import threading
+import os
 
-# Thông tin Telegram
-api_id = 24597367
-api_hash = '97418f63c13d5575494f820bd3bef756'
-session_name = 'session_name'  # Không có .session
+# Khai báo API ID và API HASH từ môi trường
+api_id = int(os.getenv("API_ID"))
+api_hash = os.getenv("API_HASH")
+session_name = 'session_name'
 
-# ID nhóm
-group_a_id = -1001935117991   # Nhóm nguồn
-group_b_id = -1002611744078   # Nhóm đích
+group_a_id = -1001935117991   # Thay bằng nhóm A
+group_b_id = -1002611744078   # Thay bằng nhóm B
 
-# Khởi tạo client với session đã tồn tại
 client = TelegramClient(session_name, api_id, api_hash)
+
+app = Flask(__name__)
+
+# Khởi tạo route để Flask có thể chạy
+@app.route('/')
+def home():
+    return 'Bot đang chạy...'
 
 @client.on(events.NewMessage(chats=group_a_id))
 async def handle_msg(event):
@@ -29,11 +36,15 @@ async def handle_msg(event):
     except Exception as e:
         print(f"❌ Lỗi: {e}")
 
-# Chạy bot trong async
-async def main():
-    await client.start()
+# Tạo một thread để chạy TelegramClient
+def run_telegram_bot():
+    client.start()
     print("🤖 Bot đang chạy...")
-    await client.run_until_disconnected()
+    client.run_until_disconnected()
 
-# Gọi hàm main
-asyncio.run(main())
+# Chạy TelegramClient trong một thread riêng biệt
+threading.Thread(target=run_telegram_bot).start()
+
+# Chạy Flask app
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)  # Port này cần để Render nhận diện (có thể thay bằng port khác)
