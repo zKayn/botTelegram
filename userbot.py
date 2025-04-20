@@ -29,13 +29,16 @@ async def handle_msg(event):
     except Exception as e:
         print(f"❌ Lỗi: {e}")
 
-# ✅ Tạo event loop riêng cho thread
+# ✅ Đây là cách chạy bot đúng trong thread phụ với asyncio
 def run_telegram_bot():
+    async def main():
+        await client.start()
+        print("🤖 Bot Telegram đang chạy...")
+        await client.run_until_disconnected()
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(client.start())
-    print("🤖 Bot Telegram đang chạy...")
-    loop.run_until_complete(client.run_until_disconnected())
+    loop.run_until_complete(main())
 
 if __name__ == '__main__':
     threading.Thread(target=run_telegram_bot).start()
